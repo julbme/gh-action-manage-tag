@@ -1,0 +1,27 @@
+name: Manage tags
+description: "Manage the tags for a given repository"
+author: "julbme"
+branding:
+  icon: tag
+  color: blue
+inputs:
+  name:
+    description: "The tag name."
+    required: true
+  state:
+    description: "The expected state of the tag."
+    default: "present"
+    required: false
+  from:
+    description: "The ref from which to create the tag (branch, tag, ref or sha)."
+    required: false
+outputs:
+  name:
+    description: "The tag name."
+  ref:
+    description: "The tag ref."
+  sha:
+    description: "The tag sha."
+runs:
+  using: "docker"
+  image: "Dockerfile"
