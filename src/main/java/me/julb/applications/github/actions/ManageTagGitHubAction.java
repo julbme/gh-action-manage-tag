@@ -25,6 +25,7 @@ package me.julb.applications.github.actions;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
 
@@ -91,7 +92,7 @@ public class ManageTagGitHubAction implements GitHubActionProvider {
             var existingTagGHRef = getTagGHRef(tagName);
 
             // Creation path.
-            if (InputTagState.PRESENT.equals(tagState)) {
+            if (tagState == InputTagState.PRESENT) {
                 // New ref
                 var newRef = tagRef(tagName);
 
@@ -209,12 +210,13 @@ public class ManageTagGitHubAction implements GitHubActionProvider {
         var tagRef = tagRef(name);
 
         // List of candidates for which ref is OK.
-        var candidates = List.of(branchRef.toLowerCase(), tagRef.toLowerCase(), name.toLowerCase());
+        var candidates = List.of(
+                branchRef.toLowerCase(Locale.ROOT), tagRef.toLowerCase(Locale.ROOT), name.toLowerCase(Locale.ROOT));
 
         // Browse existing refs
         for (GHRef ghRef : ghRepository.getRefs()) {
             // Check if the ref is in the candidates.
-            if (candidates.contains(ghRef.getRef().toLowerCase())) {
+            if (candidates.contains(ghRef.getRef().toLowerCase(Locale.ROOT))) {
                 return Optional.of(ghRef);
             }
         }
