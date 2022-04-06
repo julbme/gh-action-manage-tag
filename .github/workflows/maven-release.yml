@@ -105,7 +105,7 @@ jobs:
 
       - name: add major tag if present
         if: ${{ steps.release_vars.outputs.git_tag_major }}
-        uses: julbme/gh-action-manage-tag@v1.0.0
+        uses: julbme/gh-action-manage-tag@v1
         with:
           name: ${{ steps.release_vars.outputs.git_tag_major }}
           from: ${{ steps.release_vars.outputs.git_tag }}
@@ -114,7 +114,7 @@ jobs:
 
       - name: add minor tag if present
         if: ${{ steps.release_vars.outputs.git_tag_minor }}
-        uses: julbme/gh-action-manage-tag@v1.0.0
+        uses: julbme/gh-action-manage-tag@v1
         with:
           name: ${{ steps.release_vars.outputs.git_tag_minor }}
           from: ${{ steps.release_vars.outputs.git_tag }}
