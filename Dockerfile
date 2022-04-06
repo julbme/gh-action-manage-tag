@@ -4,7 +4,7 @@ ENV JVM_ARGS="--add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/s
 
 ARG SCM_URL=https://github.com/julbme/gh-action-manage-tag
 ARG ARTIFACT_ID=gh-action-manage-tag
-ARG VERSION=1.0.1
+ARG VERSION=1.0.2-SNAPSHOT
 
 WORKDIR /app
 
