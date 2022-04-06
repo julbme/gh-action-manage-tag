@@ -21,17 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package me.julb.applications.github.actions;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
-
-import lombok.AccessLevel;
-import lombok.NonNull;
-import lombok.Setter;
 
 import org.kohsuke.github.GHFileNotFoundException;
 import org.kohsuke.github.GHRef;
@@ -42,6 +38,10 @@ import org.kohsuke.github.GitHubBuilder;
 
 import me.julb.sdk.github.actions.kit.GitHubActionsKit;
 import me.julb.sdk.github.actions.spi.GitHubActionProvider;
+
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * The action to manage tags. &lt;br&gt;
@@ -79,45 +79,50 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
 <span class="fc" id="L79">            var from = getInputFrom();</span>
 
             // Trace parameters
-<span class="fc" id="L82">            ghActionsKit.debug(String.format(&quot;parameters: [name: %s, state: %s, from: %s]&quot;, tagName, tagState.name(), from));</span>
+<span class="fc" id="L82">            ghActionsKit.debug(</span>
+<span class="fc" id="L83">                    String.format(&quot;parameters: [name: %s, state: %s, from: %s]&quot;, tagName, tagState.name(), from));</span>
 
             // Read GitHub repository.
-<span class="fc" id="L85">            connectApi();</span>
+<span class="fc" id="L86">            connectApi();</span>
 
             // Retrieve repository
-<span class="fc" id="L88">            ghRepository = ghApi.getRepository(ghActionsKit.getGitHubRepository());</span>
+<span class="fc" id="L89">            ghRepository = ghApi.getRepository(ghActionsKit.getGitHubRepository());</span>
 
             // Get existing tag if any.
-<span class="fc" id="L91">            var existingTagGHRef = getTagGHRef(tagName);</span>
+<span class="fc" id="L92">            var existingTagGHRef = getTagGHRef(tagName);</span>
 
             // Creation path.
-<span class="fc bfc" id="L94" title="All 2 branches covered.">            if (InputTagState.PRESENT.equals(tagState)) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (tagState == InputTagState.PRESENT) {</span>
                 // New ref
-<span class="fc" id="L96">                var newRef = tagRef(tagName);</span>
+<span class="fc" id="L97">                var newRef = tagRef(tagName);</span>
 
                 // Get source SHA.
-<span class="fc" id="L99">                var fromSha = getAnyGHRef(from).map(GHRef::getObject).map(GHObject::getSha).orElse(from);</span>
+<span class="fc" id="L100">                var fromSha = getAnyGHRef(from)</span>
+<span class="fc" id="L101">                        .map(GHRef::getObject)</span>
+<span class="fc" id="L102">                        .map(GHObject::getSha)</span>
+<span class="fc" id="L103">                        .orElse(from);</span>
 
                 // Create tag.
-<span class="fc" id="L102">                var ghRefCreated = createGHRef(newRef, fromSha, existingTagGHRef);</span>
+<span class="fc" id="L106">                var ghRefCreated = createGHRef(newRef, fromSha, existingTagGHRef);</span>
 
                 // Set output.
-<span class="fc" id="L105">                ghActionsKit.setOutput(OutputVars.REF.key(), ghRefCreated.getRef());</span>
-<span class="fc" id="L106">                ghActionsKit.setOutput(OutputVars.NAME.key(), tagName);</span>
-<span class="fc" id="L107">                ghActionsKit.setOutput(OutputVars.SHA.key(), ghRefCreated.getObject().getSha());</span>
-<span class="fc" id="L108">            } else {</span>
+<span class="fc" id="L109">                ghActionsKit.setOutput(OutputVars.REF.key(), ghRefCreated.getRef());</span>
+<span class="fc" id="L110">                ghActionsKit.setOutput(OutputVars.NAME.key(), tagName);</span>
+<span class="fc" id="L111">                ghActionsKit.setOutput(</span>
+<span class="fc" id="L112">                        OutputVars.SHA.key(), ghRefCreated.getObject().getSha());</span>
+<span class="fc" id="L113">            } else {</span>
                 // Delete tag.
-<span class="fc" id="L110">                deleteGHRef(existingTagGHRef);</span>
+<span class="fc" id="L115">                deleteGHRef(existingTagGHRef);</span>
 
                 // Set empty output.
-<span class="fc" id="L113">                ghActionsKit.setEmptyOutput(OutputVars.REF.key());</span>
-<span class="fc" id="L114">                ghActionsKit.setEmptyOutput(OutputVars.NAME.key());</span>
-<span class="fc" id="L115">                ghActionsKit.setEmptyOutput(OutputVars.SHA.key());</span>
+<span class="fc" id="L118">                ghActionsKit.setEmptyOutput(OutputVars.REF.key());</span>
+<span class="fc" id="L119">                ghActionsKit.setEmptyOutput(OutputVars.NAME.key());</span>
+<span class="fc" id="L120">                ghActionsKit.setEmptyOutput(OutputVars.SHA.key());</span>
             }
-<span class="fc" id="L117">        } catch (Exception e) {</span>
-<span class="fc" id="L118">            throw new CompletionException(e);</span>
-<span class="fc" id="L119">        }</span>
-<span class="fc" id="L120">    }</span>
+<span class="fc" id="L122">        } catch (Exception e) {</span>
+<span class="fc" id="L123">            throw new CompletionException(e);</span>
+<span class="fc" id="L124">        }</span>
+<span class="fc" id="L125">    }</span>
 
     // ------------------------------------------ Utility methods.
 
@@ -126,7 +131,7 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
      * @return the &quot;name&quot; input.
      */
     String getInputName() {
-<span class="fc" id="L129">        return ghActionsKit.getRequiredInput(&quot;name&quot;);</span>
+<span class="fc" id="L134">        return ghActionsKit.getRequiredInput(&quot;name&quot;);</span>
     }
 
     /**
@@ -134,7 +139,7 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
      * @return the &quot;state&quot; input.
      */
     InputTagState getInputState() {
-<span class="fc" id="L137">        return ghActionsKit.getEnumInput(&quot;state&quot;, InputTagState.class).orElse(InputTagState.PRESENT);</span>
+<span class="fc" id="L142">        return ghActionsKit.getEnumInput(&quot;state&quot;, InputTagState.class).orElse(InputTagState.PRESENT);</span>
     }
 
     /**
@@ -142,29 +147,29 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
      * @return the &quot;from&quot; input.
      */
     String getInputFrom() {
-<span class="fc" id="L145">        return ghActionsKit.getInput(&quot;from&quot;).orElse(ghActionsKit.getGitHubSha());</span>
+<span class="fc" id="L150">        return ghActionsKit.getInput(&quot;from&quot;).orElse(ghActionsKit.getGitHubSha());</span>
     }
 
     /**
      * Connects to GitHub API.
      * @throws IOException if an error occurs.
      */
-    void connectApi()
-        throws IOException {
-<span class="fc" id="L154">        ghActionsKit.debug(&quot;github api url connection: check.&quot;);</span>
+    void connectApi() throws IOException {
+<span class="fc" id="L158">        ghActionsKit.debug(&quot;github api url connection: check.&quot;);</span>
 
         // Get token
-<span class="fc" id="L157">        var githubToken = ghActionsKit.getRequiredEnv(&quot;GITHUB_TOKEN&quot;);</span>
+<span class="fc" id="L161">        var githubToken = ghActionsKit.getRequiredEnv(&quot;GITHUB_TOKEN&quot;);</span>
 
-        //@formatter:off
-<span class="fc" id="L160">        ghApi = Optional.ofNullable(ghApi).orElse(new GitHubBuilder()</span>
-<span class="fc" id="L161">            .withEndpoint(ghActionsKit.getGitHubApiUrl())</span>
-<span class="fc" id="L162">            .withOAuthToken(githubToken)</span>
-<span class="fc" id="L163">            .build());</span>
-<span class="fc" id="L164">        ghApi.checkApiUrlValidity();</span>
-<span class="fc" id="L165">        ghActionsKit.debug(&quot;github api url connection: ok.&quot;);</span>
-        //@formatter:on
-<span class="fc" id="L167">    }</span>
+        // @formatter:off
+<span class="fc" id="L164">        ghApi = Optional.ofNullable(ghApi)</span>
+<span class="fc" id="L165">                .orElse(new GitHubBuilder()</span>
+<span class="fc" id="L166">                        .withEndpoint(ghActionsKit.getGitHubApiUrl())</span>
+<span class="fc" id="L167">                        .withOAuthToken(githubToken)</span>
+<span class="fc" id="L168">                        .build());</span>
+<span class="fc" id="L169">        ghApi.checkApiUrlValidity();</span>
+<span class="fc" id="L170">        ghActionsKit.debug(&quot;github api url connection: ok.&quot;);</span>
+        // @formatter:on
+<span class="fc" id="L172">    }</span>
 
     /**
      * Gets the {@link GHRef} tag matching the given name.
@@ -172,24 +177,23 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
      * @return the {@link GHRef} for the given tag if exists, &lt;code&gt;false&lt;/code&gt; otherwise.
      * @throws IOException if an error occurs.
      */
-<span class="fc bfc" id="L175" title="All 2 branches covered.">    Optional&lt;GHRef&gt; getTagGHRef(@NonNull String name)</span>
-        throws IOException {
+<span class="fc bfc" id="L180" title="All 2 branches covered.">    Optional&lt;GHRef&gt; getTagGHRef(@NonNull String name) throws IOException {</span>
         // Convert tag name to ref
-<span class="fc" id="L178">        var tagRef = tagRef(name);</span>
+<span class="fc" id="L182">        var tagRef = tagRef(name);</span>
 
         // Browse existing refs
         try {
-<span class="fc bfc" id="L182" title="All 2 branches covered.">            for (GHRef ghRef : ghRepository.getRefs(&quot;tags&quot;)) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">            for (GHRef ghRef : ghRepository.getRefs(&quot;tags&quot;)) {</span>
                 // Check if the tag to manage already exists.
-<span class="fc bfc" id="L184" title="All 2 branches covered.">                if (ghRef.getRef().equalsIgnoreCase(tagRef)) {</span>
-<span class="fc" id="L185">                    return Optional.of(ghRef);</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                if (ghRef.getRef().equalsIgnoreCase(tagRef)) {</span>
+<span class="fc" id="L189">                    return Optional.of(ghRef);</span>
                 }
             }
-<span class="fc" id="L188">        } catch (GHFileNotFoundException e) {</span>
-<span class="fc" id="L189">            ghActionsKit.debug(&quot;No tags found in this repository.&quot;);</span>
-<span class="fc" id="L190">        }</span>
+<span class="fc" id="L192">        } catch (GHFileNotFoundException e) {</span>
+<span class="fc" id="L193">            ghActionsKit.debug(&quot;No tags found in this repository.&quot;);</span>
+<span class="fc" id="L194">        }</span>
 
-<span class="fc" id="L192">        return Optional.empty();</span>
+<span class="fc" id="L196">        return Optional.empty();</span>
     }
 
     /**
@@ -198,26 +202,26 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
      * @return the {@link GHRef} for the given branch or tag if exists, &lt;code&gt;false&lt;/code&gt; otherwise.
      * @throws IOException if an error occurs.
      */
-<span class="fc bfc" id="L201" title="All 2 branches covered.">    Optional&lt;GHRef&gt; getAnyGHRef(@NonNull String name)</span>
-        throws IOException {
+<span class="fc bfc" id="L205" title="All 2 branches covered.">    Optional&lt;GHRef&gt; getAnyGHRef(@NonNull String name) throws IOException {</span>
         // Convert name to branch ref
-<span class="fc" id="L204">        var branchRef = branchRef(name);</span>
+<span class="fc" id="L207">        var branchRef = branchRef(name);</span>
 
         // Convert name to tag ref
-<span class="fc" id="L207">        var tagRef = tagRef(name);</span>
+<span class="fc" id="L210">        var tagRef = tagRef(name);</span>
 
         // List of candidates for which ref is OK.
-<span class="fc" id="L210">        var candidates = List.of(branchRef.toLowerCase(), tagRef.toLowerCase(), name.toLowerCase());</span>
+<span class="fc" id="L213">        var candidates = List.of(</span>
+<span class="fc" id="L214">                branchRef.toLowerCase(Locale.ROOT), tagRef.toLowerCase(Locale.ROOT), name.toLowerCase(Locale.ROOT));</span>
 
         // Browse existing refs
-<span class="fc bfc" id="L213" title="All 2 branches covered.">        for (GHRef ghRef : ghRepository.getRefs()) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (GHRef ghRef : ghRepository.getRefs()) {</span>
             // Check if the ref is in the candidates.
-<span class="fc bfc" id="L215" title="All 2 branches covered.">            if (candidates.contains(ghRef.getRef().toLowerCase())) {</span>
-<span class="fc" id="L216">                return Optional.of(ghRef);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            if (candidates.contains(ghRef.getRef().toLowerCase(Locale.ROOT))) {</span>
+<span class="fc" id="L220">                return Optional.of(ghRef);</span>
             }
         }
 
-<span class="fc" id="L220">        return Optional.empty();</span>
+<span class="fc" id="L224">        return Optional.empty();</span>
     }
 
     /**
@@ -228,22 +232,22 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
      * @return the {@link GHRef} created.
      * @throws IOException if an error occurs.
      */
-<span class="fc bfc" id="L231" title="All 6 branches covered.">    GHRef createGHRef(@NonNull String newRef, @NonNull String sourceSHA, @NonNull Optional&lt;GHRef&gt; existingRef)</span>
-        throws IOException {
+<span class="fc bfc" id="L235" title="All 6 branches covered.">    GHRef createGHRef(@NonNull String newRef, @NonNull String sourceSHA, @NonNull Optional&lt;GHRef&gt; existingRef)</span>
+            throws IOException {
         GHRef ghRefManaged;
 
-<span class="fc bfc" id="L235" title="All 2 branches covered.">        if (existingRef.isEmpty()) {</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (existingRef.isEmpty()) {</span>
             // The tag does not exist: create
-<span class="fc" id="L237">            ghActionsKit.notice(&quot;creating the ref.&quot;);</span>
-<span class="fc" id="L238">            ghRefManaged = ghRepository.createRef(newRef, sourceSHA);</span>
+<span class="fc" id="L241">            ghActionsKit.notice(&quot;creating the ref.&quot;);</span>
+<span class="fc" id="L242">            ghRefManaged = ghRepository.createRef(newRef, sourceSHA);</span>
         } else {
             // The tag already exists: update to source SHA.
-<span class="fc" id="L241">            ghActionsKit.notice(&quot;updating the ref with the given SHA&quot;);</span>
-<span class="fc" id="L242">            ghRefManaged = existingRef.get();</span>
-<span class="fc" id="L243">            ghRefManaged.updateTo(sourceSHA, true);</span>
+<span class="fc" id="L245">            ghActionsKit.notice(&quot;updating the ref with the given SHA&quot;);</span>
+<span class="fc" id="L246">            ghRefManaged = existingRef.get();</span>
+<span class="fc" id="L247">            ghRefManaged.updateTo(sourceSHA, true);</span>
         }
 
-<span class="fc" id="L246">        return ghRefManaged;</span>
+<span class="fc" id="L250">        return ghRefManaged;</span>
     }
 
     /**
@@ -251,26 +255,25 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
      * @param refToDelete the {@link GHRef} to delete, or {@link Optional#empty()}.
      * @throws IOException if an error occurs.
      */
-<span class="fc bfc" id="L254" title="All 2 branches covered.">    void deleteGHRef(@NonNull Optional&lt;GHRef&gt; refToDelete)</span>
-        throws IOException {
+<span class="fc bfc" id="L258" title="All 2 branches covered.">    void deleteGHRef(@NonNull Optional&lt;GHRef&gt; refToDelete) throws IOException {</span>
         // Check if tag exists.
-<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (refToDelete.isPresent()) {</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">        if (refToDelete.isPresent()) {</span>
             // The tag exists: delete.
-<span class="fc" id="L259">            ghActionsKit.notice(&quot;deleting the tag.&quot;);</span>
-<span class="fc" id="L260">            refToDelete.get().delete();</span>
+<span class="fc" id="L262">            ghActionsKit.notice(&quot;deleting the tag.&quot;);</span>
+<span class="fc" id="L263">            refToDelete.get().delete();</span>
         } else {
             // The tag does not exist, nothing to do.
-<span class="fc" id="L263">            ghActionsKit.notice(&quot;skipping tag deletion as it does not exist.&quot;);</span>
+<span class="fc" id="L266">            ghActionsKit.notice(&quot;skipping tag deletion as it does not exist.&quot;);</span>
         }
-<span class="fc" id="L265">    }</span>
+<span class="fc" id="L268">    }</span>
 
     /**
      * Gets the ref from a branch name.
      * @param branchName the branch name.
      * @return the ref for the given branch name.
      */
-<span class="fc bfc" id="L272" title="All 2 branches covered.">    String branchRef(@NonNull String branchName) {</span>
-<span class="fc" id="L273">        return String.format(&quot;refs/heads/%s&quot;, branchName);</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">    String branchRef(@NonNull String branchName) {</span>
+<span class="fc" id="L276">        return String.format(&quot;refs/heads/%s&quot;, branchName);</span>
     }
 
     /**
@@ -278,8 +281,8 @@ import me.julb.sdk.github.actions.spi.GitHubActionProvider;
      * @param name the tag name.
      * @return the ref for the given tag name.
      */
-<span class="fc bfc" id="L281" title="All 2 branches covered.">    String tagRef(@NonNull String name) {</span>
-<span class="fc" id="L282">        return String.format(&quot;refs/tags/%s&quot;, name);</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">    String tagRef(@NonNull String name) {</span>
+<span class="fc" id="L285">        return String.format(&quot;refs/tags/%s&quot;, name);</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

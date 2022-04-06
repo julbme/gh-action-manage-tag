@@ -1,5 +1,5 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 Julb.me :: GitHub action to manage tags,me.julb,Application,0,5,0,0,0,2,0,1,0,1
 Julb.me :: GitHub action to manage tags,me.julb.applications.github.actions,OutputVars,0,35,0,0,0,8,0,3,0,3
-Julb.me :: GitHub action to manage tags,me.julb.applications.github.actions,ManageTagGitHubAction,0,396,0,30,0,74,0,30,0,15
+Julb.me :: GitHub action to manage tags,me.julb.applications.github.actions,ManageTagGitHubAction,0,399,0,30,0,81,0,30,0,15
 Julb.me :: GitHub action to manage tags,me.julb.applications.github.actions,InputTagState,0,15,0,0,0,3,0,1,0,1
