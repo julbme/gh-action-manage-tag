@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package me.julb.applications.github.actions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,8 +85,7 @@ class ManageTagGitHubActionTest {
      * @throws java.lang.Exception
      */
     @BeforeEach
-    void setUp()
-        throws Exception {
+    void setUp() throws Exception {
         githubAction = new ManageTagGitHubAction();
         githubAction.setGhActionsKit(ghActionsKitMock);
         githubAction.setGhApi(ghApiMock);
@@ -98,8 +96,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputName_thenReturnValue()
-        throws Exception {
+    void whenGetInputName_thenReturnValue() throws Exception {
         when(this.ghActionsKitMock.getRequiredInput("name")).thenReturn("1.0.0");
 
         assertThat(this.githubAction.getInputName()).isEqualTo("1.0.0");
@@ -121,9 +118,9 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputStateProvided_thenReturnValue()
-        throws Exception {
-        when(this.ghActionsKitMock.getEnumInput("state", InputTagState.class)).thenReturn(Optional.of(InputTagState.ABSENT));
+    void whenGetInputStateProvided_thenReturnValue() throws Exception {
+        when(this.ghActionsKitMock.getEnumInput("state", InputTagState.class))
+                .thenReturn(Optional.of(InputTagState.ABSENT));
 
         assertThat(this.githubAction.getInputState()).isEqualTo(InputTagState.ABSENT);
 
@@ -134,8 +131,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputStateNotProvided_thenReturnDefaultValue()
-        throws Exception {
+    void whenGetInputStateNotProvided_thenReturnDefaultValue() throws Exception {
         when(this.ghActionsKitMock.getEnumInput("state", InputTagState.class)).thenReturn(Optional.empty());
 
         assertThat(this.githubAction.getInputState()).isEqualTo(InputTagState.PRESENT);
@@ -147,8 +143,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputFromProvided_thenReturnValue()
-        throws Exception {
+    void whenGetInputFromProvided_thenReturnValue() throws Exception {
         when(this.ghActionsKitMock.getInput("from")).thenReturn(Optional.of("branch-name"));
 
         assertThat(this.githubAction.getInputFrom()).isEqualTo("branch-name");
@@ -160,8 +155,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputFromNotProvided_thenReturnDefaultValue()
-        throws Exception {
+    void whenGetInputFromNotProvided_thenReturnDefaultValue() throws Exception {
         when(this.ghActionsKitMock.getInput("from")).thenReturn(Optional.empty());
         when(this.ghActionsKitMock.getGitHubSha()).thenReturn("123456");
 
@@ -175,8 +169,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenExecuteCreateTagNotExists_thenTagCreated()
-        throws Exception {
+    void whenExecuteCreateTagNotExists_thenTagCreated() throws Exception {
         var spy = spy(this.githubAction);
 
         var ghRefCreated = Mockito.mock(GHRef.class);
@@ -219,8 +212,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenExecuteCreateTagAlreadyExists_thenTagUpdated()
-        throws Exception {
+    void whenExecuteCreateTagAlreadyExists_thenTagUpdated() throws Exception {
         var spy = spy(this.githubAction);
 
         var ghRefCreated = Mockito.mock(GHRef.class);
@@ -265,8 +257,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenExecuteDeleteTagAlreadyExists_thenTagDeleted()
-        throws Exception {
+    void whenExecuteDeleteTagAlreadyExists_thenTagDeleted() throws Exception {
         var spy = spy(this.githubAction);
 
         var ghRefExisting = Mockito.mock(GHRef.class);
@@ -303,8 +294,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenExecuteDeleteTagNotExists_thenTagDeleted()
-        throws Exception {
+    void whenExecuteDeleteTagNotExists_thenTagDeleted() throws Exception {
         var spy = spy(this.githubAction);
 
         when(this.ghActionsKitMock.getGitHubRepository()).thenReturn("octocat/Hello-World");
@@ -339,8 +329,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenConnectApi_thenVerifyOK()
-        throws Exception {
+    void whenConnectApi_thenVerifyOK() throws Exception {
         when(ghActionsKitMock.getRequiredEnv("GITHUB_TOKEN")).thenReturn("token");
         when(ghActionsKitMock.getGitHubApiUrl()).thenReturn("https://api.github.com");
 
@@ -356,8 +345,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetTagGHRefExist_thenReturnRef()
-        throws Exception {
+    void whenGetTagGHRefExist_thenReturnRef() throws Exception {
         var ghRef1 = Mockito.mock(GHRef.class);
         when(ghRef1.getRef()).thenReturn("refs/tags/1.0.1");
 
@@ -377,8 +365,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetTagGHRefDoesNotExist_thenReturnEmpty()
-        throws Exception {
+    void whenGetTagGHRefDoesNotExist_thenReturnEmpty() throws Exception {
         when(ghRepositoryMock.getRefs("tags")).thenReturn(new GHRef[] {});
 
         assertThat(this.githubAction.getTagGHRef("1.0.0")).isEmpty();
@@ -390,8 +377,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetTagGHRefRepoHasNoTags_thenReturnEmpty()
-        throws Exception {
+    void whenGetTagGHRefRepoHasNoTags_thenReturnEmpty() throws Exception {
         when(ghRepositoryMock.getRefs("tags")).thenThrow(GHFileNotFoundException.class);
 
         assertThat(this.githubAction.getTagGHRef("1.0.0")).isEmpty();
@@ -403,8 +389,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetTagGHRefNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenGetTagGHRefNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.getTagGHRef(null));
     }
 
@@ -412,8 +397,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetAnyGHRefExist_thenReturnRef()
-        throws Exception {
+    void whenGetAnyGHRefExist_thenReturnRef() throws Exception {
         var ghRef1 = Mockito.mock(GHRef.class);
         when(ghRef1.getRef()).thenReturn("refs/heads/main");
 
@@ -440,8 +424,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetAnyGHRefDoesNotExist_thenReturnEmpty()
-        throws Exception {
+    void whenGetAnyGHRefDoesNotExist_thenReturnEmpty() throws Exception {
         when(ghRepositoryMock.getRefs()).thenReturn(new GHRef[] {});
 
         assertThat(this.githubAction.getAnyGHRef("branch-name")).isEmpty();
@@ -453,8 +436,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetAnyGHRefNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenGetAnyGHRefNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.getAnyGHRef(null));
     }
 
@@ -462,8 +444,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenCreateGHRefPresentExistingTag_thenUpdateExistingTag()
-        throws Exception {
+    void whenCreateGHRefPresentExistingTag_thenUpdateExistingTag() throws Exception {
         var ghRef = Mockito.mock(GHRef.class);
 
         this.githubAction.createGHRef("1.0.0", "123456", Optional.of(ghRef));
@@ -476,8 +457,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenCreateGHRefEmptyExistingTag_thenCreateTag()
-        throws Exception {
+    void whenCreateGHRefEmptyExistingTag_thenCreateTag() throws Exception {
 
         this.githubAction.createGHRef("refs/tags/1.0.0", "123456", Optional.empty());
 
@@ -489,20 +469,21 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenCreateGHRefNull_thenThrowNullPointerException()
-        throws Exception {
-        var emptyOptional = Optional.<GHRef> empty();
+    void whenCreateGHRefNull_thenThrowNullPointerException() throws Exception {
+        var emptyOptional = Optional.<GHRef>empty();
         assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef(null, "123456", emptyOptional));
-        assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef("refs/tags/1.0.0", null, emptyOptional));
-        assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef("refs/tags/1.0.0", "123456", null));
+        assertThrows(
+                NullPointerException.class,
+                () -> this.githubAction.createGHRef("refs/tags/1.0.0", null, emptyOptional));
+        assertThrows(
+                NullPointerException.class, () -> this.githubAction.createGHRef("refs/tags/1.0.0", "123456", null));
     }
 
     /**
      * Test method.
      */
     @Test
-    void whenDeleteGHRefPresent_thenDeleteGhRef()
-        throws Exception {
+    void whenDeleteGHRefPresent_thenDeleteGhRef() throws Exception {
         var ghRef = Mockito.mock(GHRef.class);
 
         assertDoesNotThrow(() -> {
@@ -529,8 +510,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenDeleteGHRefNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenDeleteGHRefNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.deleteGHRef(null));
     }
 
@@ -546,8 +526,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenBranchRefNameNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenBranchRefNameNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.branchRef(null));
     }
 
@@ -563,8 +542,7 @@ class ManageTagGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenTagRefNameNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenTagRefNameNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.tagRef(null));
     }
 }

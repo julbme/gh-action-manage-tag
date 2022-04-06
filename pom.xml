@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -14,12 +15,7 @@
 	<name>Julb.me :: GitHub action to manage tags</name>
 	<description>This GitHub action enables to create or delete tags of a repository.</description>
 
-	<properties>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
-
-		<sonar.projectKey>julbme_gh-action-manage-tag</sonar.projectKey>
-	</properties>
+	<url>https://julbme.github.io/gh-action-manage-tag/</url>
 
 	<licenses>
 		<license>
@@ -29,18 +25,16 @@
 		</license>
 	</licenses>
 
-	<url>https://julbme.github.io/gh-action-manage-tag/</url>
-
-	<issueManagement>
-		<url>https://github.com/julbme/gh-action-manage-tag/issues</url>
-		<system>GitHub Issues</system>
-	</issueManagement>
-
 	<scm>
-		<url>https://github.com/julbme/gh-action-manage-tag</url>
 		<connection>scm:git:git://github.com/julbme/gh-action-manage-tag.git</connection>
 		<developerConnection>scm:git:git@github.com:julbme/gh-action-manage-tag.git</developerConnection>
+		<url>https://github.com/julbme/gh-action-manage-tag</url>
 	</scm>
+
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/julbme/gh-action-manage-tag/issues</url>
+	</issueManagement>
 
 	<distributionManagement>
 		<site>
@@ -50,16 +44,23 @@
 		</site>
 	</distributionManagement>
 
+	<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+
+		<sonar.projectKey>julbme_gh-action-manage-tag</sonar.projectKey>
+	</properties>
+
 	<dependencies>
+		<dependency>
+			<groupId>org.kohsuke</groupId>
+			<artifactId>github-api</artifactId>
+		</dependency>
 		<!-- compile -->
 		<dependency>
 			<groupId>me.julb</groupId>
 			<artifactId>sdk-github-actions</artifactId>
 			<version>[1,2)</version>
-		</dependency>
-		<dependency>
-			<groupId>org.kohsuke</groupId>
-			<artifactId>github-api</artifactId>
 		</dependency>
 
 		<!-- provided -->
@@ -87,44 +88,18 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
+			<artifactId>mockito-inline</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-inline</artifactId>
+			<artifactId>mockito-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.jreleaser</groupId>
-				<artifactId>jreleaser-maven-plugin</artifactId>
-				<configuration>
-					<configFile>jreleaser.yml</configFile>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -153,10 +128,10 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
 						</goals>
+						<phase>package</phase>
 						<configuration>
 							<shadedArtifactAttached>true</shadedArtifactAttached>
 							<transformers>
@@ -181,9 +156,34 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<phase>verify</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jreleaser</groupId>
+				<artifactId>jreleaser-maven-plugin</artifactId>
+				<configuration>
+					<configFile>jreleaser.yml</configFile>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-
 
 	<profiles>
 		<profile>
@@ -201,15 +201,15 @@
 						<executions>
 							<execution>
 								<id>update-docker-file</id>
-								<phase>validate</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
+								<phase>validate</phase>
 								<configuration>
 									<target>
 										<replaceregexp file="Dockerfile" match="ARG SCM_URL.*" replace="ARG SCM_URL=${project.scm.url}" />
 										<replaceregexp file="Dockerfile" match="ARG ARTIFACT_ID.*" replace="ARG ARTIFACT_ID=${project.artifactId}" />
-										<replaceregexp file="Dockerfile" match="ARG VERSION.*" replace="ARG VERSION=${nextPatchVersion}" />
+										<replaceregexp file="Dockerfile" match="ARG VERSION.*" replace="ARG VERSION=${j3.var.nextPatchVersion}" />
 									</target>
 								</configuration>
 							</execution>
@@ -233,15 +233,15 @@
 						<executions>
 							<execution>
 								<id>update-docker-file</id>
-								<phase>validate</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
+								<phase>validate</phase>
 								<configuration>
 									<target>
 										<replaceregexp file="Dockerfile" match="ARG SCM_URL.*" replace="ARG SCM_URL=${project.scm.url}" />
 										<replaceregexp file="Dockerfile" match="ARG ARTIFACT_ID.*" replace="ARG ARTIFACT_ID=${project.artifactId}" />
-										<replaceregexp file="Dockerfile" match="ARG VERSION.*" replace="ARG VERSION=${nextMinorVersion}" />
+										<replaceregexp file="Dockerfile" match="ARG VERSION.*" replace="ARG VERSION=${j3.var.nextMinorVersion}" />
 									</target>
 								</configuration>
 							</execution>
@@ -265,15 +265,15 @@
 						<executions>
 							<execution>
 								<id>update-docker-file</id>
-								<phase>validate</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
+								<phase>validate</phase>
 								<configuration>
 									<target>
 										<replaceregexp file="Dockerfile" match="ARG SCM_URL.*" replace="ARG SCM_URL=${project.scm.url}" />
 										<replaceregexp file="Dockerfile" match="ARG ARTIFACT_ID.*" replace="ARG ARTIFACT_ID=${project.artifactId}" />
-										<replaceregexp file="Dockerfile" match="ARG VERSION.*" replace="ARG VERSION=${nextMajorVersion}" />
+										<replaceregexp file="Dockerfile" match="ARG VERSION.*" replace="ARG VERSION=${j3.var.nextMajorVersion}" />
 									</target>
 								</configuration>
 							</execution>
@@ -297,15 +297,15 @@
 						<executions>
 							<execution>
 								<id>update-docker-file</id>
-								<phase>validate</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
+								<phase>validate</phase>
 								<configuration>
 									<target>
 										<replaceregexp file="Dockerfile" match="ARG SCM_URL.*" replace="ARG SCM_URL=${project.scm.url}" />
 										<replaceregexp file="Dockerfile" match="ARG ARTIFACT_ID.*" replace="ARG ARTIFACT_ID=${project.artifactId}" />
-										<replaceregexp file="Dockerfile" match="ARG VERSION.*" replace="ARG VERSION=${releaseVersion}" />
+										<replaceregexp file="Dockerfile" match="ARG VERSION.*" replace="ARG VERSION=${j3.var.releaseVersion}" />
 									</target>
 								</configuration>
 							</execution>
@@ -329,10 +329,10 @@
 						<executions>
 							<execution>
 								<id>update-docker-file</id>
-								<phase>validate</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
+								<phase>validate</phase>
 								<configuration>
 									<target>
 										<replaceregexp file="Dockerfile" match="ARG SCM_URL.*" replace="ARG SCM_URL=${project.scm.url}" />
@@ -347,4 +347,4 @@
 			</build>
 		</profile>
 	</profiles>
-</project> 
+</project>
