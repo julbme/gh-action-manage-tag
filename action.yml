@@ -1,4 +1,4 @@
-name: Manage tags
+name: Manage GitHub tags
 description: "Manage the tags for a given repository"
 author: "julbme"
 branding:
